@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-  <title>DB Project 초심</title>
+  <title>DB ProJect 초심</title>
   <meta charset='utf-8' />
   <link href="${pageContext.request.contextPath}/FullCalendar/lib/main.css" rel="stylesheet" />
   <script src="${pageContext.request.contextPath}/FullCalendar/lib/main.js"></script>
