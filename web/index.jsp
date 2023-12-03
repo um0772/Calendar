@@ -18,15 +18,27 @@
           var modal = document.createElement('div');
           modal.innerHTML = `
             <div id="myModal" class="modal">
-              <div class="modal-content">
-                <span class="close">&times;</span>
-                <p>일정 추가 ${clickedDate}</p>
-                  <div class = "modal-body">
-                    <input type="text" id="eventTitle" placeholder="일정 제목">
-                    <input type="text" id="eventDescription" placeholder="설명">
-                  </div>
-                <button id="addEventBtn">일정 추가</button>
-              </div>
+                <div class="modal-content">
+                  <div class="first"></div>
+                    <div class="middle">
+                      <div class="modal-top">
+                        <span class="close">&times;</span>
+                        <p>일정 추가 ${clickedDate}</p>
+                      </div>
+                      <div class = "modal-body">
+                        <div class = "body-title">
+                          <input type="text" id="eventTitle" placeholder="일정 제목">
+                        </div>
+                        <div class = "body-sub">
+                          <input type="text" id="eventDescription" placeholder="설명">
+                        </div>
+                      </div>
+                      <div class="modal-bottom">
+                        <button id="addEventBtn">일정 추가</button>
+                      </div>
+                    </div>
+                    <div class="end"></div>
+                </div>
             </div>
           `;
           document.body.appendChild(modal);
@@ -103,67 +115,112 @@
 
   </script>
   <style>
+    html, body {
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      position: relative;
+    }
     /* 모달 스타일 */
     .modal {
-      display: block;
-      position: fixed;
+      position: absolute;
       z-index: 1;
-      left: 0;
+      display: grid;
+      place-items: center;
       top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       overflow: auto;
       background-color: rgba(0, 0, 0, 0.4);
+
+
+    }
+    .modal-content {
+      height: 60%;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+
+
     }
 
-    .modal-content {
-      background-color: #fefefe;
-      margin: 15% auto;
-      width: 50%;
-      display: block;
-      padding: 20px;
-      border: 1px solid #888;
+    .first {
+      height: 40%;
+
+      width: 20%;
+    }
+    .end {
+      height: 40%;
+      width: 20%;
+    }
+    .middle {
+      position: relative;
+      flex-direction: column;
+      display: flex;
+      height: 60%;
+      width: 60%;
+
+    }
+
+    .modal-top {
+      top: 0;
+      flex: 1;
+      background-color: #3788d8;
+      height: 10%;
+      width: 100%;
+      text-align: center;
+      position: absolute;
     }
     .modal-body {
-      display: flex;
-      text-align: center;
-      flex-direction: column;
-      height: 100%;
 
+      align-items: center;
+      justify-content: center;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 50%;
+      background-color: bisque;
+    }
+    .close {
+      cursor: pointer; /* 마우스 오버 시 커서 변경 */
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      color: #fff;
+    }
+    .body-title {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
     }
     #eventTitle {
       width: 80%;
     }
+    .body-sub {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+    }
     #eventDescription {
       width: 80%;
-      height: 100%;
-    }
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
+      height: 60px;
     }
 
-    .close:hover,
-    .close:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
-    }
+    .modal-bottom {
+      flex: 1;
+      width: 100%;
+      bottom: 0;
+      position: absolute;
+      height: 10%;
 
-    .fc-event-title {
-      margin-top: 5px;
-      font-size: 15px;
-      color: #ffffff; /* 설명 글꼴 색상 */
     }
-
-    .fc-event-description {
-      margin-top: 5px;
-      width: 50px;
-      height: 30px;
-      font-size: 12px;
-      color: #ffffff; /* 설명 글꼴 색상 */
+    #addEventBtn {
+      height: 10%;
     }
   </style>
 </head>
