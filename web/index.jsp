@@ -19,25 +19,28 @@
           modal.innerHTML = `
             <div id="myModal" class="modal">
                 <div class="modal-content">
-                  <div class="first"></div>
+                  <div class="content-header"></div>
+                    <div class="content-body">
+                        <div class="first"></div>
                     <div class="middle">
                       <div class="modal-top">
                         <span class="close">&times;</span>
-                        <p>일정 추가 ${clickedDate}</p>
+                        <p style="font-weight: bold;">일정 추가 ${clickedDate}</p>
                       </div>
                       <div class = "modal-body">
                         <div class = "body-title">
                           <input type="text" id="eventTitle" placeholder="일정 제목">
                         </div>
                         <div class = "body-sub">
-                          <input type="text" id="eventDescription" placeholder="설명">
+                          <input type="text" id="eventDescription" placeholder="일정 내용">
                         </div>
                       </div>
                       <div class="modal-bottom">
-                        <button id="addEventBtn">일정 추가</button>
+                        <button id="addEventBtn">추가 하기</button>
                       </div>
                     </div>
                     <div class="end"></div>
+                    </div>
                 </div>
             </div>
           `;
@@ -70,11 +73,28 @@
           modal.innerHTML = `
             <div id="myModal" class="modal">
               <div class="modal-content">
-                <span class="close">&times;</span>
-                <p>일정 수정 ${eventTitle}</p>
-                <input type="text" id="eventTitle" placeholder="일정 제목" value="${eventTitle}">
-                <input type="text" id="eventDescription" placeholder="일정 설명" value="${eventDescription}">
-                <button id="updateEventBtn">일정 수정</button>
+                <div class="content-header"></div>
+                    <div class="content-body">
+                        <div class="first"></div>
+                        <div class="middle">
+                            <div class="modal-top">
+                                <span class="close">&times;</span>
+                                <p style="font-weight: bold;">일정 수정 ${eventTitle}</p>
+                            </div>
+                            <div class="modal-body">
+                              <div class="body-title">
+                                 <input type="text" id="eventTitle" placeholder="일정 제목" value="${eventTitle}">
+                              </div>
+                              <div class="body-sub">
+                                <input type="text" id="eventDescription" placeholder="일정 설명" value="${eventDescription}">
+                              </div>
+                            </div>
+                            <div class="modal-bottom">
+                              <button id="updateEventBtn">일정 수정</button>
+                            </div>
+                        </div>
+                        <div class="end"></div>
+                    </div>
               </div>
             </div>
           `;
@@ -133,44 +153,50 @@
       height: 100%;
       overflow: auto;
       background-color: rgba(0, 0, 0, 0.4);
-
-
     }
     .modal-content {
-      height: 60%;
+      height: 100%;
       width: 100%;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
 
 
     }
-
+    .content-header {
+      width: 100%;
+      height: 10%;
+    }
+    .content-body {
+      width: 100%;
+      height: 70%;
+      display: flex;
+      flex-direction: row;
+    }
     .first {
       height: 40%;
 
-      width: 20%;
+      width: 30%;
     }
     .end {
       height: 40%;
-      width: 20%;
+      width: 30%;
     }
     .middle {
       position: relative;
       flex-direction: column;
       display: flex;
+      flex: 1;
       height: 60%;
-      width: 60%;
+      width: 40%;
 
     }
 
     .modal-top {
       top: 0;
-      flex: 1;
-      background-color: #3788d8;
       height: 10%;
       width: 100%;
       text-align: center;
-      position: absolute;
+      background-color: #ffe4c4;
     }
     .modal-body {
 
@@ -179,48 +205,75 @@
       display: flex;
       flex-direction: column;
       width: 100%;
-      height: 50%;
-      background-color: bisque;
+      height: 80%;
+      background-color: #fffaf0;
     }
     .close {
       cursor: pointer; /* 마우스 오버 시 커서 변경 */
       position: absolute;
-      top: 10px;
+
       right: 10px;
-      font-size: 24px;
+      font-size: 30px;
       color: #fff;
     }
     .body-title {
-      display: flex;
+      text-align: center;
       width: 100%;
       align-items: center;
+      height: 20%;
+
       justify-content: center;
+      border: 50px;
     }
     #eventTitle {
       width: 80%;
+      height: 30%;
+
     }
+
     .body-sub {
       width: 100%;
+
       display: flex;
       align-items: center;
       justify-content: center;
-
+      border: 30px;
+      height: 50%;
     }
     #eventDescription {
       width: 80%;
-      height: 60px;
+      height: 100%;
+
     }
 
     .modal-bottom {
-      flex: 1;
       width: 100%;
-      bottom: 0;
-      position: absolute;
-      height: 10%;
 
+      bottom: 0;
+      height: 20%;
+      text-align: center;
+      align-items: end;
+      background-color: #fffaf0;
+      display: flex;
+      justify-content: center;
     }
     #addEventBtn {
-      height: 10%;
+      height: 40%;
+      margin: 10px;
+      border: 2px solid darksalmon;
+      background-color: rgba(0,0,0,0);
+      color: darksalmon;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    #updateEventBtn {
+      height: 40%;
+      margin: 10px;
+      border: 2px solid darksalmon;
+      background-color: rgba(0,0,0,0);
+      color: darksalmon;
+      border-radius: 5px;
+      font-weight: bold;
     }
   </style>
 </head>
