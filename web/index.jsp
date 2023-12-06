@@ -1,283 +1,143 @@
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html lang='en'>
+<html>
 <head>
-  <title>DB ProJect~ 초심</title>
-  <meta charset='utf-8' />
-  <link href="${pageContext.request.contextPath}/FullCalendar/lib/main.css" rel="stylesheet" />
-  <script src="${pageContext.request.contextPath}/FullCalendar/lib/main.js"></script>
-  <script src='FullCalendar/lib/locales/ko.js'></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var calendarEl = document.getElementById('calendar');
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'ko',
-        dateClick: function(info) {
-          var clickedDate = info.dateStr;
-          var modal = document.createElement('div');
-          modal.innerHTML = `
-            <div id="myModal" class="modal">
-                <div class="modal-content">
-                  <div class="content-header"></div>
-                    <div class="content-body">
-                        <div class="first"></div>
-                    <div class="middle">
-                      <div class="modal-top">
-                        <span class="close">&times;</span>
-                        <p style="font-weight: bold;">일정 추가 ${clickedDate}</p>
-                      </div>
-                      <div class = "modal-body">
-                        <div class = "body-title">
-                          <input type="text" id="eventTitle" placeholder="일정 제목">
-                        </div>
-                        <div class = "body-sub">
-                          <input type="text" id="eventDescription" placeholder="일정 내용">
-                        </div>
-                      </div>
-                      <div class="modal-bottom">
-                        <button id="addEventBtn">추가 하기</button>
-                      </div>
-                    </div>
-                    <div class="end"></div>
-                    </div>
-                </div>
-            </div>
-          `;
-          document.body.appendChild(modal);
-
-          var modalClose = modal.querySelector('.close');
-          modalClose.onclick = function() {
-            document.body.removeChild(modal);
-          };
-
-          var addEventBtn = modal.querySelector('#addEventBtn');
-          addEventBtn.onclick = function() {
-            var eventTitle = modal.querySelector('#eventTitle').value;
-            var eventDescription = modal.querySelector('#eventDescription').value;
-            var event = {
-              title: eventTitle,
-              start: clickedDate,
-              allDay: true,
-              description: eventDescription // 설명 추가
-            };
-            calendar.addEvent(event);
-            document.body.removeChild(modal);
-          };
-        },
-        eventClick: function(info) {
-          var clickedEvent = info.event;
-          var eventTitle = clickedEvent.title;
-          var eventDescription = clickedEvent.extendedProps.description || ''; // 기존 설명
-          var modal = document.createElement('div');
-          modal.innerHTML = `
-            <div id="myModal" class="modal">
-              <div class="modal-content">
-                <div class="content-header"></div>
-                    <div class="content-body">
-                        <div class="first"></div>
-                        <div class="middle">
-                            <div class="modal-top">
-                                <span class="close">&times;</span>
-                                <p style="font-weight: bold;">일정 수정 ${eventTitle}</p>
-                            </div>
-                            <div class="modal-body">
-                              <div class="body-title">
-                                 <input type="text" id="eventTitle" placeholder="일정 제목" value="${eventTitle}">
-                              </div>
-                              <div class="body-sub">
-                                <input type="text" id="eventDescription" placeholder="일정 설명" value="${eventDescription}">
-                              </div>
-                            </div>
-                            <div class="modal-bottom">
-                              <button id="updateEventBtn">일정 수정</button>
-                            </div>
-                        </div>
-                        <div class="end"></div>
-                    </div>
-              </div>
-            </div>
-          `;
-          document.body.appendChild(modal);
-
-          var modalClose = modal.querySelector('.close');
-          modalClose.onclick = function() {
-            document.body.removeChild(modal);
-          };
-
-          var updateEventBtn = modal.querySelector('#updateEventBtn');
-          var titleInput = modal.querySelector('#eventTitle');
-          var descriptionInput = modal.querySelector('#eventDescription');
-
-          titleInput.value = eventTitle;
-          descriptionInput.value = eventDescription;
-
-          updateEventBtn.onclick = function() {
-            var newEventTitle = titleInput.value;
-            var newEventDescription = descriptionInput.value;
-            clickedEvent.setProp('title', newEventTitle);
-            clickedEvent.setExtendedProp('description', newEventDescription); // 설명 업데이트
-            document.body.removeChild(modal);
-          };
-        },
-        eventDidMount: function(info) {
-          var description = info.event.extendedProps.description;
-          if (description) {
-            var descriptionEl = document.createElement('div');
-            descriptionEl.className = 'fc-event-description';
-            descriptionEl.innerHTML = description;
-            info.el.querySelector('.fc-event-title').appendChild(descriptionEl);
-          }
+    <title>로그인</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
-      });
-      calendar.render();
-    });
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        form {
+           height: 100%;
+        }
 
-  </script>
-  <style>
-    html, body {
-      min-height: 100%;
-      margin: 0;
-      padding: 0;
-      position: relative;
-    }
-    /* 모달 스타일 */
-    .modal {
-      position: absolute;
-      z-index: 1;
-      display: grid;
-      place-items: center;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.4);
-    }
-    .modal-content {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
+        .header-container {
+            background-color: #f0f0f0;
+            text-align: center;
+            height: 30%;
+            display: flex;
+            width: 100%;
+            justify-content: flex-end;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header-text {
+            font-size: 30px;
 
+            font-weight: bold;
+        }
 
-    }
-    .content-header {
-      width: 100%;
-      height: 10%;
-    }
-    .content-body {
-      width: 100%;
-      height: 70%;
-      display: flex;
-      flex-direction: row;
-    }
-    .first {
-      height: 40%;
+        .body-container {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            width: 100%;
+            height: 40%; /* 바디 컨테이너의 높이를 40%로 설정 */
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            display: flex;
 
-      width: 30%;
-    }
-    .end {
-      height: 40%;
-      width: 30%;
-    }
-    .middle {
-      position: relative;
-      flex-direction: column;
-      display: flex;
-      flex: 1;
-      height: 60%;
-      width: 40%;
+        }
+        .body-box {
+            width: 250px;
+            height: 250px;
+            border: 1px solid #000;
+            background-color: #f0f0f0;
+            margin: 19px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 7px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #username {
+            font-size: 12px;
+        }
+        .form-group {
+            flex-direction: column;
+            display: flex;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
 
-    }
-
-    .modal-top {
-      top: 0;
-      height: 10%;
-      width: 100%;
-      text-align: center;
-      background-color: #ffe4c4;
-    }
-    .modal-body {
-
-      align-items: center;
-      justify-content: center;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 80%;
-      background-color: #fffaf0;
-    }
-    .close {
-      cursor: pointer; /* 마우스 오버 시 커서 변경 */
-      position: absolute;
-
-      right: 10px;
-      font-size: 30px;
-      color: #fff;
-    }
-    .body-title {
-      text-align: center;
-      width: 100%;
-      align-items: center;
-      height: 20%;
-
-      justify-content: center;
-      border: 50px;
-    }
-    #eventTitle {
-      width: 80%;
-      height: 30%;
-
-    }
-
-    .body-sub {
-      width: 100%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 30px;
-      height: 50%;
-    }
-    #eventDescription {
-      width: 80%;
-      height: 100%;
-
-    }
-
-    .modal-bottom {
-      width: 100%;
-
-      bottom: 0;
-      height: 20%;
-      text-align: center;
-      align-items: end;
-      background-color: #fffaf0;
-      display: flex;
-      justify-content: center;
-    }
-    #addEventBtn {
-      height: 40%;
-      margin: 10px;
-      border: 2px solid darksalmon;
-      background-color: rgba(0,0,0,0);
-      color: darksalmon;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    #updateEventBtn {
-      height: 40%;
-      margin: 10px;
-      border: 2px solid darksalmon;
-      background-color: rgba(0,0,0,0);
-      color: darksalmon;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-  </style>
+        .footer-container {
+            background-color: #f0f0f0;
+            height: 30%;
+            width: 100%;
+            text-align: center;
+            justify-content: flex-end;
+            flex-direction: column;
+            align-items: center;
+            display: flex;
+        }
+        .footer-text {
+            font-weight: bold;
+            font-size: 30px;
+            margin: 10px;
+        }
+    </style>
 </head>
 <body>
-<div id='calendar'></div>
+
+
+<!-- 로그인 폼 -->
+<form action="loginCheck.jsp" method="post">
+    <div class="container">
+        <div class="header-container">
+            <div class="header-text">LOGIN</div>
+        </div>
+        <div class="body-container">
+            <div class="body-box">
+                <div class="form-group">
+                    <label for="username">USER NAME</label>
+                    <input type="text" id="username" name="username">
+
+
+                    <label for="password">PASSWORD</label>
+                    <input type="password" id="password" name="password">
+
+
+                    <input type="submit" value="LOGIN">
+                </div>
+            </div>
+        </div>
+        <div class="footer-container">
+
+        </div>
+    </div>
+</form>
+
 </body>
 </html>
