@@ -18,24 +18,38 @@
         .header-container {
             background-color: #f0f0f0;
             text-align: center;
-            padding: 20px;
+            height: 20%;
+            display: flex;
+            width: 100%;
+            justify-content: flex-end;
+            flex-direction: column;
+            align-items: center;
         }
         .header-text {
             font-size: 30px;
             font-weight: bold;
         }
         .body-container {
+            font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            flex-grow: 1;
-            display: flex;
+            width: 100%;
+            height: 60%; /* 바디 컨테이너의 높이를 40%로 설정 */
+            text-align: center;
             justify-content: center;
             align-items: center;
+            display: flex;
         }
         .body-box {
+            height: 90%;
             width: 300px;
-            padding: 20px;
             border: 1px solid #000;
-            background-color: #fff;
+            background-color: #f0f0f0;
+            margin: 19px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            justify-content: center;
+            padding: 20px;
             border-radius: 10px;
         }
         input[type = "text"],
@@ -48,6 +62,9 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             box-sizing: border-box;
+        }
+        #team {
+            padding: 10px;
         }
         input[type="submit"] {
             width: 100%;
@@ -71,6 +88,16 @@
             border: 1px solid #ddd; /* 테두리 설정 */
             border-radius: 5px; /* 모서리를 둥글게 설정 */
             box-sizing: border-box; /* 박스 크기 계산 방법을 지정 */
+        }
+        .footer-container {
+            background-color: #f0f0f0;
+            height: 20%;
+            width: 100%;
+            text-align: center;
+            justify-content: flex-end;
+            flex-direction: column;
+            align-items: center;
+            display: flex;
         }
     </style>
 
@@ -100,6 +127,19 @@
     <div class="body-container">
         <div class="body-box">
             <form action="SignUpCheck.jsp" method="post">
+                <!-- '팀' 콤보 박스 -->
+                <label for="team">팀</label>
+                <select id="team" name="team" onchange="onTeamChange()">
+                    <option value="">팀 선택</option>
+                    <option value="developer">개발자</option>
+                    <option value="designer">디자이너</option>
+                    <option value="manager">매니저</option>
+                </select>
+                <!-- '팀' 비밀번호 입력란 -->
+                <div id="team-password" style="display: none;">
+                    <label for="Group-password">팀 비밀번호</label>
+                    <input type="Group-password" id="Group-password" name="Group-password">
+                </div>
                 <label for="username">이름</label>
                 <input type="text" id="username" name="username" required>
 
@@ -112,24 +152,16 @@
                 <label for="confirm-password">비밀번호 확인</label>
                 <input type="password" id="confirm-password" name="confirm-password" required>
 
-                <!-- '팀' 콤보 박스 -->
-                <label for="team">팀</label>
-                <select id="team" name="team" onchange="onTeamChange()">
-                    <option value="">팀 선택</option>
-                    <option value="developer">개발자</option>
-                    <option value="designer">디자이너</option>
-                    <option value="manager">매니저</option>
-                </select>
 
-                <!-- '팀' 비밀번호 입력란 -->
-                <div id="team-password" style="display: none;">
-                    <label for="Group-password">팀 비밀번호</label>
-                    <input type="Group-password" id="Group-password" name="Group-password">
-                </div>
+
+
 
                 <input type="submit" value="회원가입">
             </form>
         </div>
+    </div>
+    <div class="footer-container">
+
     </div>
 </div>
 </body>
