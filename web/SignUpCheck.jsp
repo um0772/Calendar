@@ -15,6 +15,7 @@
 <body>
 <%
     String username = request.getParameter("username");
+    String userid = request.getParameter("userid");
     String email = request.getParameter("email");
     String password = request.getParameter("password");
     String confirmPassword = request.getParameter("confirm-password");
@@ -46,7 +47,7 @@
         hasError = true;
         errorMessage += "비밀번호가 일치하지 않습니다.\\n";
     }
-
+    /*
     //팀 비밀번호 확인
     if (team.equals("developer") && !"dd".equals(teamPassword)) {
         hasError = true;
@@ -62,45 +63,86 @@
         hasError = true;
         errorMessage += "매니저 팀의 비밀번호가 일치하지 않습니다.\\n";
     }
-
+    */
     if (!hasError) {
         Connection con = null;
-        PreparedStatement pstmt_user = null;
-        PreparedStatement pstmt_team = null;
+        PreparedStatement pstmtUser = null;
+        PreparedStatement pstmtTeam = null;
+        boolean autoCommit = true;
 
         try {
             // 데이터베이스 연결
             con = DatabaseConnector.getConnection();
+            autoCommit = con.getAutoCommit();
+            con.setAutoCommit(false); // 트랜잭션 시작
 
-            // User 테이블에 정보 저장
-            String sql_user = "INSERT INTO User (user_name, user_email, user_PW) VALUES (?, ?, ?)";
-            pstmt_user = con.prepareStatement(sql_user, Statement.RETURN_GENERATED_KEYS);
-            pstmt_user.setString(1, username);
-            pstmt_user.setString(2, email);
-            pstmt_user.setString(3, password); // 비밀번호 해시 처리 필요
-            int userResult = pstmt_user.executeUpdate();
+            // SQL 쿼리 실행
+            String sql_user = "INSERT INTO User (user_ID, user_name, user_email, user_PW) VALUES (?, ?, ?, ?)";
+            pstmtUser = con.prepareStatement(sql_user);
+            pstmtUser.setString(1, userid);
+            pstmtUser.setString(2, username);
+            pstmtUser.setString(3, email);
+            pstmtUser.setString(4, password); // 실제 애플리케이션에서는 비밀번호 해시 처리 필요
+            int userResult = pstmtUser.executeUpdate();
 
-            // 회원가입 성공 또는 실패에 따른 메시지 출력
-            // 회원가입 성공 또는 실패 메시지 출력
-            if (userResult > 0) {
+            String sql_user_team = "INSERT INTO userteam (user_ID, team_ID) VALUES (?, ?)";
+            pstmtTeam = con.prepareStatement(sql_user_team);
+            //개발자 팀 회원가입
+            if(team.equals("developer"))    { pstmtTeam.setString(1, userid); pstmtTeam.setString(2, "1"); }
+            else {
+                errorMessage += "개발자 팀의 비밀번호가 일치하지 않습니다.\\n";
+                out.println("<script type='text/javascript'>showMessage('"+ errorMessage +"'); history.back();</script>");
+            }
+
+            //디자이너 팀 회원가입
+            if(team.equals("designer"))     { pstmtTeam.setString(1, userid); pstmtTeam.setString(2, "2"); }
+            else {
+                errorMessage += "디자이너 팀의 비밀번호가 일치하지 않습니다.\\n";
+                out.println("<script type='text/javascript'>showMessage('"+ errorMessage +"'); history.back();</script>");
+            }
+
+            if(team.equals("researcher"))     { pstmtTeam.setString(1, userid); pstmtTeam.setString(2, "3"); }
+            else {
+                errorMessage += "연구원 팀의 비밀번호가 일치하지 않습니다.\\n";
+                out.println("<script type='text/javascript'>showMessage('"+ errorMessage +"'); history.back();</script>");
+            }
+
+            int teamresult = pstmtTeam.executeUpdate();
+
+            // 모든 쿼리가 성공적으로 실행되면 커밋
+            if (teamresult > 0 && userResult > 0) {
+                con.commit(); // 트랜잭션 커밋
                 successMessage = "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.";
-                out.println("<script type='text/javascript'>showMessage('" + successMessage + "'); window.location.href = 'login.jsp';</script>");
+                out.println("<script type='text/javascript'>showMessage('" + successMessage + "'); window.location.href = 'index.jsp';</script>");
             } else {
+                con.rollback(); // 트랜잭션 롤백
                 errorMessage = "회원가입에 실패했습니다. 다시 시도해주세요.";
-                out.println("<script type='text/javascript'>showMessage('" + errorMessage + "');</script>");
+                out.println("<script type='text/javascript'>showMessage('" + errorMessage + "'); history.back();</script>");
             }
         } catch(Exception e) {
+            if(con != null) {
+                try {
+                    con.rollback(); // 오류 발생 시 트랜잭션 롤백
+                } catch(SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
             e.printStackTrace();
             errorMessage = "데이터베이스 처리 중 오류가 발생했습니다.";
-            out.println("<script type='text/javascript'>showMessage('" + errorMessage + "');</script>");
+            out.println("<script type='text/javascript'>showMessage('" + errorMessage + "'); history.back();</script>");
         } finally {
-            // 리소스 정리
-            if(pstmt_user != null) try { pstmt_user.close(); } catch(SQLException ex) {}
-            if(pstmt_team != null) try { pstmt_team.close(); } catch(SQLException ex) {}
-            if(con != null) try { con.close(); } catch(SQLException ex) {}
+            if(pstmtUser != null) try { pstmtUser.close(); } catch(SQLException ex) {}
+            if(pstmtTeam != null) try { pstmtTeam.close(); } catch(SQLException ex) {}
+            if(con != null) {
+                try {
+                    con.setAutoCommit(autoCommit); // 원래의 auto-commit 상태로 복구
+                    con.close();
+                } catch(SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
     } else {
-        // 에러 메시지 출력
         out.println("<script type='text/javascript'>showMessage('" + errorMessage + "'); history.back();</script>");
     }
 %>

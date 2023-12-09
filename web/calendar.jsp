@@ -11,10 +11,18 @@
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
       var calendar = new FullCalendar.Calendar(calendarEl, {
+        height: 880,
         initialView: 'dayGridMonth',
         locale: 'ko',
+        dayMaxEventRows: 2,
+
+
         dateClick: function(info) {
-          var clickedDate = info.dateStr;
+          var clickedDate = new Date(info.dateStr); // 클릭한 날짜의 Date 객체 생성
+          var formattedDate = clickedDate.getFullYear() + '년 ' +
+                  (clickedDate.getMonth() + 1) + '월 ' + // getMonth()는 0부터 11까지입니다.
+                  clickedDate.getDate() + '일';
+
           var modal = document.createElement('div');
           modal.innerHTML = `
             <div id="myModal" class="modal">
@@ -25,7 +33,7 @@
                     <div class="middle">
                       <div class="modal-top">
                         <span class="close">&times;</span>
-                        <p style="font-weight: bold;">일정 추가 ${clickedDate}</p>
+                        <p style="font-weight: bold;">일정 추가 -${formattedDate}</p>
                       </div>
                       <div class = "modal-body">
                         <div class = "body-title">
@@ -34,6 +42,7 @@
                         <div class = "body-sub">
                           <input type="text" id="eventDescription" placeholder="일정 내용">
                         </div>
+
                       </div>
                       <div class="modal-bottom">
                         <button id="addEventBtn">추가 하기</button>
@@ -136,22 +145,24 @@
   </script>
   <style>
     html, body {
-      min-height: 100%;
+      height: 100%;
       margin: 0;
       padding: 0;
-      position: relative;
+      overflow: hidden;
+
     }
     /* 모달 스타일 */
     .modal {
-      position: absolute;
+      position: fixed;
       z-index: 1;
-      display: grid;
+      display: flex;
+      align-items: center;
       place-items: center;
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
-      overflow: auto;
+      height: 100vh;
+      overflow: hidden;
       background-color: rgba(0, 0, 0, 0.4);
     }
     .modal-content {
@@ -164,11 +175,11 @@
     }
     .content-header {
       width: 100%;
-      height: 10%;
+      height: 20%;
     }
     .content-body {
       width: 100%;
-      height: 70%;
+      height: 80%;
       display: flex;
       flex-direction: row;
     }
@@ -275,6 +286,21 @@
       border-radius: 5px;
       font-weight: bold;
     }
+
+    #calendar {
+      margin: 10px auto;
+      max-width: 1400px;
+    }
+
+    .fc .fc-daygrid-day {
+      height: 150px; /* 원하는 높이로 조정하세요 */
+    }
+    .date-time-display {
+      margin-top: 10px; /* 상단 여백 */
+      font-size: 0.9em; /* 폰트 크기 */
+      text-align: center; /* 가운데 정렬 */
+    }
+
   </style>
 </head>
 <body>
