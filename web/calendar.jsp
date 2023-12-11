@@ -5,17 +5,45 @@
   <title>DB ProJect~ 초심</title>
   <meta charset='utf-8' />
   <link href="${pageContext.request.contextPath}/FullCalendar/lib/main.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/calendarStyle.css"/>
   <script src="${pageContext.request.contextPath}/FullCalendar/lib/main.js"></script>
   <script src='FullCalendar/lib/locales/ko.js'></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // FullCalendar 인스턴스 생성 및 설정
       var calendarEl = document.getElementById('calendar');
+      // 데이터 로딩 함수
+      function loadCalendarData() {
+        return fetch('calendarData.jsp')
+                .then(response => response.json())
+                .then(data => {
+                  console.log("Data loaded: ", data);
+                  return data; // 로드된 데이터 반환
+                })
+                .catch(error => {
+                  console.error("Error loading data: ", error);
+                  // 에러 처리
+                });
+      }
+
       var calendar = new FullCalendar.Calendar(calendarEl, {
         height: 880,
         initialView: 'dayGridMonth',
         locale: 'ko',
         dayMaxEventRows: 2,
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: '',
 
+        },
+
+        events: function(fetchInfo, successCallback, failureCallback) {
+          loadCalendarData().then(data => {
+            successCallback(data);
+          });
+
+        },
 
         dateClick: function(info) {
           var clickedDate = new Date(info.dateStr); // 클릭한 날짜의 Date 객체 생성
@@ -23,36 +51,43 @@
                   (clickedDate.getMonth() + 1) + '월 ' + // getMonth()는 0부터 11까지입니다.
                   clickedDate.getDate() + '일';
 
-          var modal = document.createElement('div');
-          modal.innerHTML = `
-            <div id="myModal" class="modal">
-                <div class="modal-content">
-                  <div class="content-header"></div>
-                    <div class="content-body">
-                        <div class="first"></div>
-                    <div class="middle">
-                      <div class="modal-top">
-                        <span class="close">&times;</span>
-                        <p style="font-weight: bold;">일정 추가 -${formattedDate}</p>
-                      </div>
-                      <div class = "modal-body">
-                        <div class = "body-title">
-                          <input type="text" id="eventTitle" placeholder="일정 제목">
+          var modalContent = `
+                    <form action="calendarCheck.jsp" method="post">
+                        <div class="modal-content">
+                        <div class="modal-top">
+                            <p style="font-weight: bold;">일정 추가 - ` + formattedDate + `</p>
                         </div>
-                        <div class = "body-sub">
-                          <input type="text" id="eventDescription" placeholder="일정 내용">
+                        <div class="modal-body">
+                            <div class="body-title">
+                                <input type="text" id="eventTitle" name="eventTitle" placeholder="일정 제목" required>
+                            </div>
+                            <div class="body-sub">
+                                <input type="text" id="eventDescription" name="eventDescription" placeholder="일정 내용" required>
+                            </div>
                         </div>
+                        <input type="hidden" id="eventDate" name="eventDate" value="` + info.dateStr + `" required>
+                        <div class="modal-bottom">
+                            <button type="submit" id="addEventBtn">추가 하기</button>
+                        </div>
+                        </div>
+                    </form>
+                    `;
 
-                      </div>
-                      <div class="modal-bottom">
-                        <button id="addEventBtn">추가 하기</button>
-                      </div>
+          var modal = document.createElement('div');
+          modal.className = 'modal';
+          modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="content-header"></div>
+                        <div class="content-body">
+                            <div class="first"></div>
+                            <div class="middle">
+                                ` + modalContent + `
+                            </div>
+                            <div class="end"></div>
+                        </div>
                     </div>
-                    <div class="end"></div>
-                    </div>
-                </div>
-            </div>
-          `;
+                    </form>
+                    `;
           document.body.appendChild(modal);
 
           var modalClose = modal.querySelector('.close');
@@ -80,33 +115,38 @@
           var eventDescription = clickedEvent.extendedProps.description || ''; // 기존 설명
           var modal = document.createElement('div');
           modal.innerHTML = `
-            <div id="myModal" class="modal">
-              <div class="modal-content">
-                <div class="content-header"></div>
-                    <div class="content-body">
-                        <div class="first"></div>
-                        <div class="middle">
-                            <div class="modal-top">
-                                <span class="close">&times;</span>
-                                <p style="font-weight: bold;">일정 수정 ${eventTitle}</p>
-                            </div>
-                            <div class="modal-body">
-                              <div class="body-title">
-                                 <input type="text" id="eventTitle" placeholder="일정 제목" value="${eventTitle}">
-                              </div>
-                              <div class="body-sub">
-                                <input type="text" id="eventDescription" placeholder="일정 설명" value="${eventDescription}">
-                              </div>
-                            </div>
-                            <div class="modal-bottom">
-                              <button id="updateEventBtn">일정 수정</button>
-                            </div>
+                    <form id = "eventForm" action="calendarUpdate.jsp" method="post">
+                        <div id="myModal" class="modal">
+                          <div class="modal-content">
+                            <div class="content-header"></div>
+                                <div class="content-body">
+                                    <div class="first"></div>
+                                    <div class="middle">
+                                        <div class="modal-top">
+                                            <p style="font-weight: bold;">일정 수정</p>
+                                        </div>
+                                        <div class="modal-body">
+                                        <input type="hidden" name="originalTitle" value="` + eventTitle + `" >
+                                        <input type="hidden" name="originalDescription" value="` + eventDescription + `">
+                                          <div class="body-title">
+                                             <input type="text" name="newTitle" id="eventTitle" placeholder="일정 제목" value="` + eventTitle + `" required>
+                                          </div>
+                                          <div class="body-sub">
+                                            <input type="text" name="newDescription" id="eventDescription" placeholder="일정 설명" value="` + eventDescription + `" required>
+                                          </div>
+                                        </div>
+                                        <div class="modal-bottom">
+                                            <input type="hidden" name="action" id="formAction" value="">
+                                            <button id="updateEventBtn" name="updateAction" value = "update">일정 수정</button>
+                                            <button id="deleteEventBtn" name="deleteAction" style="background-color: red; color: white;" value = "delete">일정 삭제</button>
+                                        </div>
+                                    </div>
+                                    <div class="end"></div>
+                                </div>
+                          </div>
                         </div>
-                        <div class="end"></div>
-                    </div>
-              </div>
-            </div>
-          `;
+                        </form>
+                      `;
           document.body.appendChild(modal);
 
           var modalClose = modal.querySelector('.close');
@@ -114,7 +154,10 @@
             document.body.removeChild(modal);
           };
 
+          var form = document.getElementById('eventForm');
+          var formAction = document.getElementById('formAction');
           var updateEventBtn = modal.querySelector('#updateEventBtn');
+          var deleteEventBtn = modal.querySelector('#deleteEventBtn');
           var titleInput = modal.querySelector('#eventTitle');
           var descriptionInput = modal.querySelector('#eventDescription');
 
@@ -122,13 +165,20 @@
           descriptionInput.value = eventDescription;
 
           updateEventBtn.onclick = function() {
+            form.submit();
             var newEventTitle = titleInput.value;
             var newEventDescription = descriptionInput.value;
             clickedEvent.setProp('title', newEventTitle);
             clickedEvent.setExtendedProp('description', newEventDescription); // 설명 업데이트
             document.body.removeChild(modal);
           };
+          deleteEventBtn.onclick = function() {
+            form.submit();
+            clickedEvent.remove(); // 이벤트 삭제
+            document.body.removeChild(modal);
+          };
         },
+
         eventDidMount: function(info) {
           var description = info.event.extendedProps.description;
           if (description) {
@@ -139,169 +189,24 @@
           }
         }
       });
-      calendar.render();
+      calendar.render(); // 캘린더 렌더링
+
+      // FullCalendar 렌더링 후 커스텀 버튼을 찾아서 제거합니다.
+      var customButton = document.querySelector('.fc-customButton-button'); // 실제 버튼의 클래스 이름을 확인해야 합니다.
+      if (customButton) {
+        customButton.style.display = 'none'; // 버튼을 숨깁니다.
+      }
+
+      // 헤더에 새로운 텍스트 요소를 추가합니다.
+      var headerToolbar = calendarEl.querySelector('.fc-header-toolbar');
+      if (headerToolbar) {
+        var textEl = document.createElement('div');
+        textEl.className = 'custom-text';
+        textEl.textContent = '<%= session.getAttribute("username") %>' + '님 환영합니다.'; // JSP 코드로 사용자 이름을 가져옵니다.
+        headerToolbar.appendChild(textEl);
+      }
     });
-
   </script>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-
-    }
-    /* 모달 스타일 */
-    .modal {
-      position: fixed;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      place-items: center;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      overflow: hidden;
-      background-color: rgba(0, 0, 0, 0.4);
-    }
-    .modal-content {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-
-
-    }
-    .content-header {
-      width: 100%;
-      height: 20%;
-    }
-    .content-body {
-      width: 100%;
-      height: 80%;
-      display: flex;
-      flex-direction: row;
-    }
-    .first {
-      height: 40%;
-
-      width: 30%;
-    }
-    .end {
-      height: 40%;
-      width: 30%;
-    }
-    .middle {
-      position: relative;
-      flex-direction: column;
-      display: flex;
-      flex: 1;
-      height: 60%;
-      width: 40%;
-
-    }
-
-    .modal-top {
-      top: 0;
-      height: 10%;
-      width: 100%;
-      text-align: center;
-      background-color: #ffe4c4;
-    }
-    .modal-body {
-
-      align-items: center;
-      justify-content: center;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 80%;
-      background-color: #fffaf0;
-    }
-    .close {
-      cursor: pointer; /* 마우스 오버 시 커서 변경 */
-      position: absolute;
-
-      right: 10px;
-      font-size: 30px;
-      color: #fff;
-    }
-    .body-title {
-      text-align: center;
-      width: 100%;
-      align-items: center;
-      height: 20%;
-
-      justify-content: center;
-      border: 50px;
-    }
-    #eventTitle {
-      width: 80%;
-      height: 30%;
-
-    }
-
-    .body-sub {
-      width: 100%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 30px;
-      height: 50%;
-    }
-    #eventDescription {
-      width: 80%;
-      height: 100%;
-
-    }
-
-    .modal-bottom {
-      width: 100%;
-
-      bottom: 0;
-      height: 20%;
-      text-align: center;
-      align-items: end;
-      background-color: #fffaf0;
-      display: flex;
-      justify-content: center;
-    }
-    #addEventBtn {
-      height: 40%;
-      margin: 10px;
-      border: 2px solid darksalmon;
-      background-color: rgba(0,0,0,0);
-      color: darksalmon;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    #updateEventBtn {
-      height: 40%;
-      margin: 10px;
-      border: 2px solid darksalmon;
-      background-color: rgba(0,0,0,0);
-      color: darksalmon;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    #calendar {
-      margin: 10px auto;
-      max-width: 1400px;
-    }
-
-    .fc .fc-daygrid-day {
-      height: 150px; /* 원하는 높이로 조정하세요 */
-    }
-    .date-time-display {
-      margin-top: 10px; /* 상단 여백 */
-      font-size: 0.9em; /* 폰트 크기 */
-      text-align: center; /* 가운데 정렬 */
-    }
-
-  </style>
 </head>
 <body>
 <div id='calendar'></div>
