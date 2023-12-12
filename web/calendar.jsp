@@ -55,7 +55,15 @@
                     <form action="calendarCheck.jsp" method="post">
                         <div class="modal-content">
                         <div class="modal-top">
+                          <div class="top-first">
+
+                          </div>
+                          <div class="top-middle">
                             <p style="font-weight: bold;">일정 추가 - ` + formattedDate + `</p>
+                          </div>
+                          <div class="top-end">
+                            <button id="closeButton" class="close-button">X</button>
+                          </div>
                         </div>
                         <div class="modal-body">
                             <div class="body-title">
@@ -89,6 +97,12 @@
                     </form>
                     `;
           document.body.appendChild(modal);
+
+          var closeButton = modal.querySelector('.close-button'); // '.close-button' 클래스로 닫기 버튼을 찾습니다.
+          closeButton.addEventListener('click', function() {
+            modal.remove(); // 클릭 시 모달을 DOM에서 제거합니다.
+          });
+
 
           var modalClose = modal.querySelector('.close');
           modalClose.onclick = function() {
